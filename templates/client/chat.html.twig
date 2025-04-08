@@ -1,0 +1,399 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chat Room{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Chat container styles */
+        .chat-wrapper {
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            height: calc(100vh - 220px);
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+        
+        /* Chat header */
+        .chat-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .chat-header-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .chat-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .chat-name {
+            font-weight: 600;
+            margin-bottom: 0;
+        }
+        
+        .chat-status {
+            font-size: 0.8rem;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--success);
+            display: inline-block;
+        }
+        
+        /* Messages area */
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message {
+            max-width: 75%;
+            margin-bottom: 15px;
+            position: relative;
+            clear: both;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 18px;
+            position: relative;
+            word-wrap: break-word;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        .user-message {
+            align-self: flex-end;
+        }
+        
+        .user-message .message-bubble {
+            background-color: var(--primary-color);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .other-message {
+            align-self: flex-start;
+        }
+        
+        .other-message .message-bubble {
+            background-color: white;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .message-info {
+            display: flex;
+            align-items: center;
+            margin-top: 4px;
+            font-size: 0.75rem;
+        }
+        
+        .message-sender {
+            font-weight: 600;
+            margin-right: 8px;
+            color: var(--dark-gray);
+        }
+        
+        .message-time {
+            color: #9ca3af;
+        }
+        
+        .user-message .message-info {
+            justify-content: flex-end;
+        }
+        
+        .date-separator {
+            text-align: center;
+            color: #9ca3af;
+            font-size: 0.8rem;
+            margin: 25px 0;
+            position: relative;
+        }
+        
+        .date-separator:before,
+        .date-separator:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background-color: #e5e7eb;
+        }
+        
+        .date-separator:before {
+            left: 0;
+        }
+        
+        .date-separator:after {
+            right: 0;
+        }
+        
+        /* Message compose area */
+        .message-compose {
+            padding: 15px 20px;
+            background-color: white;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .message-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .input-with-icon {
+            flex-grow: 1;
+            position: relative;
+        }
+        
+        .message-input {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 24px;
+            border: 1px solid #e5e7eb;
+            outline: none;
+            transition: all 0.2s;
+        }
+        
+        .message-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+        }
+        
+        .emoji-button {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        
+        .send-button {
+            width: 44px;
+            height: 44px;
+            border-radius: 22px;
+            border: none;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .send-button:hover {
+            background-color: var(--accent-color);
+            transform: scale(1.05);
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #9ca3af;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+        
+        .empty-icon {
+            font-size: 3rem;
+            color: var(--primary-light);
+            margin-bottom: 20px;
+        }
+
+        /* Hide form labels but keep them accessible for screen readers */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 767px) {
+            .chat-wrapper {
+                height: calc(100vh - 180px);
+                border-radius: 0;
+                margin: -2rem -1rem;
+            }
+            
+            .message {
+                max-width: 85%;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-lg-10 col-xl-8 mx-auto">
+        <div class="d-flex align-items-center mb-4">
+            <h1 class="h3 mb-0">Chat Room</h1>
+            <div class="ms-auto">
+                <button class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-history me-1"></i> View History
+                </button>
+            </div>
+        </div>
+        
+        <div class="chat-wrapper">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="chat-header-title">
+                    <div class="chat-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <h5 class="chat-name">{{ question.name ?? 'Chat Support' }}</h5>
+                        <div class="chat-status">
+                            <span class="status-dot"></span> Online
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-actions">
+                    <button class="btn btn-light btn-sm" title="Refresh">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Messages Area -->
+            <div class="messages-container" id="messagesContainer">
+                {% if messages is defined and messages|length > 0 %}
+                    <div class="date-separator">
+                        Today
+                    </div>
+                    
+                    {% for message in messages %}
+                        <div class="message {% if message.sender == app.user %}user-message{% else %}other-message{% endif %}">
+                            <div class="message-bubble">
+                                {{ message.content }}
+                            </div>
+                            <div class="message-info">
+                                <span class="message-sender">{{ message.sender }}</span>
+                                <span class="message-time">{{ message.createdAt|date('H:i') }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h5>No messages yet</h5>
+                        <p>Start the conversation by sending a message below.</p>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Message Compose Area -->
+            <div class="message-compose">
+                {{ form_start(form, {'attr': {'class': 'message-form'}}) }}
+                    <div class="input-with-icon">
+                        <label for="{{ form.sender.vars.id }}" class="sr-only">Your name</label>
+                        {{ form_widget(form.sender, {
+                            'attr': {
+                                'class': 'form-control',
+                                'placeholder': 'Your name',
+                                'required': 'required',
+                                'autocomplete': 'name'
+                            }
+                        }) }}
+                    </div>
+                    
+                    <div class="input-with-icon flex-grow-2">
+                        <label for="{{ form.content.vars.id }}" class="sr-only">Message</label>
+                        {{ form_widget(form.content, {
+                            'attr': {
+                                'class': 'message-input',
+                                'placeholder': 'Type your message...',
+                                'required': 'required'
+                            }
+                        }) }}
+                        <button type="button" class="emoji-button" title="Add emoji">
+                            <i class="far fa-smile"></i>
+                        </button>
+                    </div>
+                    
+                    <button type="submit" class="send-button" title="Send message">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-scroll to bottom of message list
+            const messagesContainer = document.getElementById('messagesContainer');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Focus the content input field by default
+            const contentInput = document.querySelector('.message-input');
+            if (contentInput) {
+                contentInput.focus();
+            }
+            
+            // Simple emoji picker functionality (just for demonstration)
+            const emojiButton = document.querySelector('.emoji-button');
+            if (emojiButton) {
+                const emojis = ['😊', '👍', '🙏', '❤️', '😂', '🎉', '👋', '🤔'];
+                emojiButton.addEventListener('click', function() {
+                    const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+                    contentInput.value += ' ' + emoji;
+                    contentInput.focus();
+                });
+            }
+        });
+    </script>
+{% endblock %}

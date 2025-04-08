@@ -1,0 +1,13 @@
+<h1>Chat Client</h1>
+{{ form_start(form) }}
+    {{ form_row(form.sender) }}
+    {{ form_row(form.content) }}
+    <button type="submit">Send</button>
+{{ form_end(form) }}
+
+<h2>Messages:</h2>
+<ul>
+    {% for msg in messages %}
+        <li><strong>{{ msg.sender }}</strong>: {{ msg.content }} ({{ msg.createdAt|date('H:i') }})</li>
+    {% endfor %}
+</ul>

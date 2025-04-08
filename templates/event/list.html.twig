@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+<div class="row mb-4">
+    <div class="col">
+        <h1>
+            <i class="fas fa-calendar-alt me-2"></i> Events
+        </h1>
+    </div>
+    <div class="col text-end">
+        <a href="{{ path('app_event_new') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create New Event
+        </a>
+    </div>
+</div>
+
+{% if events is empty %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i> No events found. Click on the "Create New Event" button to add your first event.
+    </div>
+{% else %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-primary">
+                <tr>
+                    <th>ID</th>
+                    <th>Event Name</th>
+                    <th>Start Date</th>
+                    <th>Category</th>
+                    <th>User ID</th>
+                    <th>Milestones</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in events %}
+                    <tr>
+                        <td>{{ event.id }}</td>
+                        <td>
+                            <a href="{{ path('app_event_view', {id: event.id}) }}">
+                                {{ event.name }}
+                            </a>
+                        </td>
+                        <td>{{ event.startDate|date('Y-m-d') }}</td>
+                        <td>
+                            {% if event.category %}
+                                <span class="badge bg-info">{{ event.category }}</span>
+                            {% else %}
+                                <span class="text-muted">None</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ event.userId }}</td>
+                        <td>
+                            <a href="{{ path('app_event_view', {id: event.id}) }}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-tasks"></i> 
+                                View Milestones
+                            </a>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ path('app_event_view', {id: event.id}) }}" class="btn btn-info" title="View">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{{ path('app_event_edit', {id: event.id}) }}" class="btn btn-warning" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{{ path('app_event_delete', {id: event.id}) }}" class="btn btn-danger" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
+{% endblock %} 

@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des messages{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>Messages reçus</h1>
+
+        {% for message in messages %}
+            <div class="card mb-3 p-3">
+                <h5>Message #{{ message.id }}</h5>
+                <p><strong>Contenu :</strong> {{ message.content }}</p>
+                <p><strong>Date :</strong> {{ message.createdAt|date('d/m/Y H:i') }}</p>
+
+                {% if message.reponses is not empty %}
+                    <div class="mt-2">
+                        <strong>Réponses :</strong>
+                        <ul>
+                            {% for reponse in message.reponses %}
+                                <li>
+                                    {{ reponse.content|slice(0, 60) ~ '...' }}
+                                    - <a href="{{ path('reply_show', {'id': reponse.id}) }}">Voir</a>
+                                    - <a href="{{ path('reply_edit', {'id': reponse.id}) }}">Modifier</a>
+                                    <form method="post" action="{{ path('reply_delete', {'id': reponse.id}) }}" style="display:inline;" onsubmit="return confirm('Confirmer la suppression ?')">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reponse.id) }}">
+                                        <button class="btn btn-sm btn-danger">Supprimer</button>
+                                    </form>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% else %}
+                    <p><em>Aucune réponse encore.</em></p>
+                {% endif %}
+
+                <a href="{{ path('reply_new', {'id': message.id}) }}" class="btn btn-primary mt-2">Répondre</a>
+            </div>
+        {% else %}
+            <p>Aucun message trouvé.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

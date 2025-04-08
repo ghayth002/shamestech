@@ -1,0 +1,7 @@
+<h1>Admin Panel</h1>
+<h2>All Messages:</h2>
+<ul>
+    {% for msg in messages %}
+        <li><strong>{{ msg.sender }}</strong>: {{ msg.content }} at {{ msg.createdAt|date('Y-m-d H:i') }}</li>
+    {% endfor %}
+</ul>

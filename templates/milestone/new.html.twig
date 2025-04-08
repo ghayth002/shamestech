@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ path('app_event_list') }}">Events</a></li>
+        <li class="breadcrumb-item"><a href="{{ path('app_event_view', {id: event.id}) }}">{{ event.name }}</a></li>
+        <li class="breadcrumb-item active">Add Milestone</li>
+    </ol>
+</nav>
+
+<div class="row mb-4">
+    <div class="col">
+        <h1><i class="fas fa-plus-circle me-2"></i> Add Milestone</h1>
+        <p class="text-muted">For event: {{ event.name }}</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-tasks me-2"></i> Milestone Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{{ path('app_milestone_new', {eventId: event.id}) }}">
+                    <div class="mb-3">
+                        <label for="name" class="form-label required">Milestone Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                        <div class="form-text">Enter a descriptive name for the milestone.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="expectedDate" class="form-label required">Expected Date</label>
+                        <input type="date" class="form-control" id="expectedDate" name="expectedDate" required>
+                        <div class="form-text">Select the date when this milestone is expected to be completed.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="completionDate" class="form-label">Completion Date</label>
+                        <input type="date" class="form-control" id="completionDate" name="completionDate">
+                        <div class="form-text">If already completed, select the completion date (optional).</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="status" class="form-label required">Status</label>
+                        <select class="form-select" id="status" name="status" required>
+                            <option value="Not_Started">Not Started</option>
+                            <option value="Started">Started</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Delay">Delayed</option>
+                        </select>
+                        <div class="form-text">Select the current status of the milestone.</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="{{ path('app_event_view', {id: event.id}) }}" class="btn btn-secondary me-md-2">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Add Milestone
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

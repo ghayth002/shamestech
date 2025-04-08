@@ -1,0 +1,318 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin Dashboard | Messages{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .admin-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+        }
+        
+        .admin-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        
+        .admin-title {
+            display: flex;
+            align-items: center;
+            color: var(--dark-gray);
+            gap: 10px;
+        }
+        
+        .admin-title i {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+        
+        .filter-bar {
+            background-color: var(--light-gray);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-message {
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.2s;
+        }
+        
+        .card-message:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .card-message.unread {
+            border-left-color: var(--warning);
+        }
+        
+        .message-content {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .message-meta {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--dark-gray);
+            font-size: 0.85rem;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-badge.new {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .status-badge.pending {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+        
+        .action-button {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            border: none;
+            background-color: #f3f4f6;
+            color: #4b5563;
+            transition: all 0.2s;
+        }
+        
+        .action-button:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+        
+        .action-button.delete:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.2s;
+        }
+        
+        .card-message:hover .action-buttons {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .pagination {
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #9ca3af;
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+            color: var(--primary-light);
+            margin-bottom: 1rem;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-12">
+        <div class="admin-header">
+            <div class="admin-title">
+                <i class="fas fa-inbox"></i>
+                <h1 class="h3 mb-0">Message Management</h1>
+            </div>
+            <div class="d-flex gap-2 align-items-center">
+                <button class="btn btn-light">
+                    <i class="fas fa-sync-alt me-1"></i> Refresh
+                </button>
+                <a href="#" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i> New Response
+                </a>
+            </div>
+        </div>
+        
+        <div class="admin-container">
+            <div class="filter-bar">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="fas fa-search text-muted"></i>
+                            </span>
+                            <input type="text" class="form-control border-start-0" placeholder="Search messages...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select">
+                            <option selected>All statuses</option>
+                            <option>New</option>
+                            <option>Pending</option>
+                            <option>Resolved</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select">
+                            <option selected>Sort by: Newest first</option>
+                            <option>Sort by: Oldest first</option>
+                            <option>Sort by: Sender name</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <button class="btn btn-outline-secondary w-100" type="button">
+                            <i class="fas fa-filter me-1"></i> Filter
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            {% if messages|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="selectAll">
+                                    </div>
+                                </th>
+                                <th>Sender</th>
+                                <th>Message</th>
+                                <th>Question</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for message in messages %}
+                                <tr class="card-message {% if loop.index is odd %}unread{% endif %}">
+                                    <td>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="chat-avatar" style="width: 36px; height: 36px; font-size: 14px;">
+                                                {{ message.sender|first|upper }}
+                                            </div>
+                                            <div>
+                                                <div class="fw-medium">{{ message.sender }}</div>
+                                                <div class="message-meta">
+                                                    <i class="fas fa-user-circle"></i> Client
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="message-content">{{ message.content }}</div>
+                                    </td>
+                                    <td>
+                                        {% if message.question is defined and message.question %}
+                                            {{ message.question.name|default('General') }}
+                                        {% else %}
+                                            General
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div>{{ message.createdAt|date('M d, Y') }}</div>
+                                        <div class="text-muted small">{{ message.createdAt|date('h:i A') }}</div>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge {% if loop.index is odd %}new{% else %}pending{% endif %}">
+                                            {% if loop.index is odd %}New{% else %}Pending{% endif %}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-button" title="Reply">
+                                                <i class="fas fa-reply"></i>
+                                            </button>
+                                            <button class="action-button" title="Mark as read">
+                                                <i class="fas fa-check-double"></i>
+                                            </button>
+                                            <button class="action-button delete" title="Delete">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <nav aria-label="Messages pagination">
+                    <ul class="pagination">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-inbox"></i>
+                    </div>
+                    <h3>No messages yet</h3>
+                    <p>Messages from your clients will appear here</p>
+                    <button class="btn btn-primary mt-3">
+                        <i class="fas fa-sync-alt me-1"></i> Refresh
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Select all checkbox functionality
+            const selectAllCheckbox = document.getElementById('selectAll');
+            if (selectAllCheckbox) {
+                selectAllCheckbox.addEventListener('change', function() {
+                    const checkboxes = document.querySelectorAll('tbody .form-check-input');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = selectAllCheckbox.checked;
+                    });
+                });
+            }
+        });
+    </script>
+{% endblock %}

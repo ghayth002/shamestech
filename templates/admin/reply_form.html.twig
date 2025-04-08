@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter / Modifier une réponse{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>{{ form.vars.value.id ? 'Modifier la réponse' : 'Nouvelle réponse' }}</h1>
+
+        {{ form_start(form) }}
+            <div class="mb-3">
+                {{ form_label(form.content) }}
+                {{ form_widget(form.content, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.content) }}
+            </div>
+
+            <button class="btn btn-success">{{ form.vars.value.id ? 'Mettre à jour' : 'Envoyer' }}</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
