@@ -15,8 +15,11 @@
         <h2 class="fw-bold text-primary mb-3">{{ event.name }}</h2>
     </div>
     <div class="col-lg-4 text-lg-end d-flex align-items-center justify-content-lg-end mt-3 mt-lg-0">
-        <a href="{{ path('app_front_events_list') }}" class="btn btn-outline-primary">
+        <a href="{{ path('app_front_events_list') }}" class="btn btn-outline-primary me-2">
             <i class="fas fa-arrow-left me-2"></i> Back to Events
+        </a>
+        <a href="{{ path('app_event_qr_code', {id: event.id}) }}" class="btn btn-primary">
+            <i class="fas fa-qrcode me-2"></i> QR Code
         </a>
     </div>
 </div>
@@ -49,7 +52,7 @@
                         </div>
                     </div>
                     
-                    <div class="row align-items-center">
+                    <div class="row align-items-center mb-4">
                         <div class="col-auto">
                             <div class="icon-wrapper rounded-circle bg-info bg-opacity-10 p-3">
                                 <i class="fas fa-tag text-info"></i>
@@ -63,6 +66,23 @@
                                 {% else %}
                                     <span class="text-muted">None</span>
                                 {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <div class="icon-wrapper rounded-circle bg-warning bg-opacity-10 p-3">
+                                <i class="fas fa-qrcode text-warning"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <h6 class="mb-1">QR Code</h6>
+                            <p class="mb-0">
+                                <a href="{{ path('app_event_qr_code', {id: event.id}) }}" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-qrcode me-2"></i> View QR Code
+                                </a>
+                                <span class="text-muted ms-2 small">Scan to access event details</span>
                             </p>
                         </div>
                     </div>
@@ -80,4 +100,14 @@
         </div>
     </div>
 </div>
+
+<style>
+.icon-wrapper {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+</style>
 {% endblock %} 

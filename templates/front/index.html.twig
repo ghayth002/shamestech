@@ -1,0 +1,125 @@
+{% extends 'front/layout.html.twig' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="jumbotron bg-light p-5 rounded mb-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <h1 class="display-4 fw-bold text-primary">Event Calendar</h1>
+            <p class="lead">Welcome to our event management system. Browse upcoming events and access details via QR codes.</p>
+            <div class="mt-4">
+                <a href="{{ path('app_front_events_list') }}" class="btn btn-primary btn-lg me-2">
+                    <i class="fas fa-calendar-alt me-2"></i> View All Events
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4 d-none d-lg-flex align-items-center justify-content-center">
+            <div class="text-center">
+                <i class="fas fa-calendar-alt text-primary" style="font-size: 8rem; opacity: 0.8;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0"><i class="fas fa-qrcode me-2"></i> QR Code Feature</h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4 class="mb-3">Access Event Information via QR Codes</h4>
+                        <p>Our new QR code system allows you to quickly access event details:</p>
+                        <ul class="list-group list-group-flush mb-4">
+                            <li class="list-group-item bg-light">
+                                <i class="fas fa-check-circle text-success me-2"></i> 
+                                Each event has its own unique QR code
+                            </li>
+                            <li class="list-group-item bg-light">
+                                <i class="fas fa-check-circle text-success me-2"></i> 
+                                Scan the code with your smartphone to view event details
+                            </li>
+                            <li class="list-group-item bg-light">
+                                <i class="fas fa-check-circle text-success me-2"></i> 
+                                Share QR codes with others for easy event access
+                            </li>
+                            <li class="list-group-item bg-light">
+                                <i class="fas fa-check-circle text-success me-2"></i> 
+                                Print QR codes for physical distribution
+                            </li>
+                        </ul>
+                        <a href="{{ path('app_front_events_list') }}" class="btn btn-primary">
+                            <i class="fas fa-calendar-alt me-2"></i> Browse Events with QR Codes
+                        </a>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="p-3 bg-light rounded mb-3">
+                            <i class="fas fa-qrcode text-primary" style="font-size: 8rem; opacity: 0.7;"></i>
+                        </div>
+                        <p class="text-muted small">Example QR code representation</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if events is not empty %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h3 class="text-primary"><i class="fas fa-star me-2"></i> Featured Events</h3>
+        <p class="text-muted">Check out these upcoming events</p>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+    {% for event in events|slice(0, 3) %}
+        <div class="col">
+            <div class="card h-100 shadow-sm hover-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">{{ event.name }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3 text-center">
+                        <div class="display-5 text-primary">{{ event.startDate|date('d') }}</div>
+                        <div class="text-muted">{{ event.startDate|date('F Y') }}</div>
+                    </div>
+                    {% if event.category %}
+                        <div class="mb-3 text-center">
+                            <span class="badge bg-info px-3 py-2">{{ event.category }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-white d-flex justify-content-between">
+                    <a href="{{ path('app_front_event', {id: event.id}) }}" class="btn btn-outline-primary">
+                        <i class="fas fa-eye me-1"></i> Details
+                    </a>
+                    <a href="{{ path('app_event_qr_code', {id: event.id}) }}" class="btn btn-warning">
+                        <i class="fas fa-qrcode me-1"></i> QR Code
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="text-center mb-5">
+    <a href="{{ path('app_front_events_list') }}" class="btn btn-primary btn-lg">
+        <i class="fas fa-calendar-alt me-2"></i> View All Events
+    </a>
+</div>
+{% endif %}
+
+<style>
+.hover-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+</style>
+{% endblock %} 

@@ -1,0 +1,88 @@
+{% extends 'front/layout.html.twig' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0 fs-4"><i class="fas fa-qrcode me-2"></i> QR Code - {{ event.name }}</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <h5 class="text-primary mb-3">Event Details</h5>
+                                <p><strong>Event Name:</strong> {{ event.name }}</p>
+                                <p><strong>Date:</strong> {{ event.startDate|date('F d, Y') }}</p>
+                                {% if event.category %}
+                                    <p><strong>Category:</strong> {{ event.category }}</p>
+                                {% endif %}
+                                <p class="text-muted small mt-3">
+                                    Scan this QR code with your smartphone to see the event details directly.
+                                    <br>No website visit required - the information is encoded in the QR code.
+                                </p>
+                            </div>
+                            <div class="alert alert-info small">
+                                <i class="fas fa-info-circle me-2"></i> This QR code contains the event information in JSON format. When scanned, it will display:
+                                <ul class="mb-0 mt-2">
+                                    <li>Event name</li>
+                                    <li>Event date</li>
+                                    <li>Category (if available)</li>
+                                    <li>Event ID for reference</li>
+                                </ul>
+                            </div>
+                            <div class="d-flex mt-4">
+                                <a href="{{ path('app_front_event', {id: event.id}) }}" class="btn btn-outline-primary me-2">
+                                    <i class="fas fa-arrow-left me-2"></i> Back to Event
+                                </a>
+                                <button onclick="printQRCode()" class="btn btn-outline-dark">
+                                    <i class="fas fa-print me-2"></i> Print QR Code
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-center">
+                            <div class="qr-code-container bg-white p-3 border rounded shadow-sm mx-auto" style="max-width: 320px;">
+                                <div class="qr-code">
+                                    {{ qr_code|raw }}
+                                </div>
+                                <div class="text-center mt-2">
+                                    <span class="badge bg-primary">Direct Information</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function printQRCode() {
+    const printContent = document.querySelector('.qr-code-container').innerHTML;
+    const originalContent = document.body.innerHTML;
+    
+    document.body.innerHTML = `
+        <div style="text-align: center; padding: 20px;">
+            <h2 style="margin-bottom: 20px;">QR Code for {{ event.name }}</h2>
+            <div style="max-width: 400px; margin: 0 auto;">
+                ${printContent}
+            </div>
+            <p style="margin-top: 20px; color: #666;">
+                Scan this QR code to see details for: {{ event.name }}
+                <br>
+                Date: {{ event.startDate|date('F d, Y') }}
+                <br>
+                <small>Event details are encoded directly in this QR code</small>
+            </p>
+        </div>
+    `;
+    
+    window.print();
+    document.body.innerHTML = originalContent;
+}
+</script>
+{% endblock %} 
