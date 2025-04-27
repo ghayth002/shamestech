@@ -58,4 +58,50 @@ class EventRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+    
+    /**
+     * Get statistics about events
+     * 
+     * @return array An array containing event statistics
+     */
+    public function getStatistics(): array
+    {
+        $entityManager = $this->getEntityManager();
+        $totalEvents = $this->count([]);
+        
+        // Get count of events by category
+        $categoriesQuery = $entityManager->createQuery(
+            'SELECT e.category, COUNT(e) as count 
+            FROM App\Entity\Event e 
+            GROUP BY e.category'
+        );
+        $categoriesResult = $categoriesQuery->getResult();
+        
+        // Get upcoming events (future events)
+        $now = new \DateTime();
+        $upcomingQuery = $entityManager->createQuery(
+            'SELECT COUNT(e) as count 
+            FROM App\Entity\Event e 
+            WHERE e.startDate > :now'
+        )->setParameter('now', $now);
+        $upcomingCount = $upcomingQuery->getSingleScalarResult();
+        
+        // Get recent events (within the last 30 days)
+        $thirtyDaysAgo = new \DateTime('-30 days');
+        $recentQuery = $entityManager->createQuery(
+            'SELECT COUNT(e) as count 
+            FROM App\Entity\Event e 
+            WHERE e.startDate BETWEEN :thirtyDaysAgo AND :now'
+        )
+        ->setParameter('thirtyDaysAgo', $thirtyDaysAgo)
+        ->setParameter('now', $now);
+        $recentEventsCount = $recentQuery->getSingleScalarResult();
+        
+        return [
+            'totalEvents' => $totalEvents,
+            'categoriesCount' => $categoriesResult,
+            'upcomingEvents' => $upcomingCount,
+            'recentEvents' => $recentEventsCount
+        ];
+    }
 } 

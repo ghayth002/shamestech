@@ -34,15 +34,81 @@ class EventViewController extends AbstractController
     }
 
     #[Route('', name: 'app_event_list', methods: ['GET'])]
-    public function listEvents(): Response
+    public function listEvents(Request $request): Response
     {
-        $events = $this->eventRepository->findAll();
+        // Get filter parameters
+        $category = $request->query->get('category');
+        $dateRange = $request->query->get('daterange');
+        $search = $request->query->get('search');
+        
+        // Base query
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('e')
+            ->from(Event::class, 'e');
+        
+        // Apply category filter
+        if ($category) {
+            $queryBuilder->andWhere('e.category = :category')
+                ->setParameter('category', $category);
+        }
+        
+        // Apply date range filter
+        if ($dateRange) {
+            $now = new \DateTime();
+            
+            switch ($dateRange) {
+                case 'this-month':
+                    $startOfMonth = new \DateTime('first day of this month midnight');
+                    $endOfMonth = new \DateTime('last day of this month 23:59:59');
+                    $queryBuilder->andWhere('e.startDate BETWEEN :start AND :end')
+                        ->setParameter('start', $startOfMonth)
+                        ->setParameter('end', $endOfMonth);
+                    break;
+                
+                case 'last-month':
+                    $startOfLastMonth = new \DateTime('first day of last month midnight');
+                    $endOfLastMonth = new \DateTime('last day of last month 23:59:59');
+                    $queryBuilder->andWhere('e.startDate BETWEEN :start AND :end')
+                        ->setParameter('start', $startOfLastMonth)
+                        ->setParameter('end', $endOfLastMonth);
+                    break;
+                
+                case 'this-year':
+                    $startOfYear = new \DateTime(date('Y-01-01 00:00:00'));
+                    $endOfYear = new \DateTime(date('Y-12-31 23:59:59'));
+                    $queryBuilder->andWhere('e.startDate BETWEEN :start AND :end')
+                        ->setParameter('start', $startOfYear)
+                        ->setParameter('end', $endOfYear);
+                    break;
+                
+                case 'future':
+                    $queryBuilder->andWhere('e.startDate >= :now')
+                        ->setParameter('now', $now);
+                    break;
+            }
+        }
+        
+        // Apply search
+        if ($search) {
+            $queryBuilder->andWhere('e.name LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+        }
+        
+        // Execute query
+        $events = $queryBuilder->getQuery()->getResult();
+        
+        // Get statistics
         $statistics = $this->eventRepository->getStatistics();
         
         return $this->render('event/list.html.twig', [
             'events' => $events,
             'statistics' => $statistics,
-            'page_title' => 'Events List'
+            'page_title' => 'Events List',
+            'filters' => [
+                'category' => $category,
+                'daterange' => $dateRange,
+                'search' => $search
+            ]
         ]);
     }
 

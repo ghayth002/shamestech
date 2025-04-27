@@ -80,14 +80,14 @@
                         </div>
                     </div>
                     
-                    {% if statistics.eventsByCategory|length > 0 %}
+                    {% if statistics.categoriesCount|length > 0 %}
                     <div class="mt-4">
                         <h6 class="text-muted mb-3">Events by Category</h6>
                         <div class="row">
                             <div class="col-md-8">
                                 <div class="progress" style="height: 25px;">
                                     {% set colors = ['bg-primary', 'bg-success', 'bg-info', 'bg-warning', 'bg-danger'] %}
-                                    {% for category in statistics.eventsByCategory %}
+                                    {% for category in statistics.categoriesCount %}
                                         {% set percentage = (category.count / statistics.totalEvents * 100)|round %}
                                         {% set colorIndex = loop.index0 % colors|length %}
                                         <div class="progress-bar {{ colors[colorIndex] }}" 
@@ -104,7 +104,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="row">
-                                    {% for category in statistics.eventsByCategory %}
+                                    {% for category in statistics.categoriesCount %}
                                         {% set colorIndex = loop.index0 % colors|length %}
                                         <div class="col-6">
                                             <div class="d-flex align-items-center mb-2">

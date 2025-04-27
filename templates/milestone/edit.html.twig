@@ -72,48 +72,48 @@
                 
                 <form method="post" action="{{ path('app_milestone_edit', {id: milestone.id}) }}">
                     <div class="mb-3">
-                        <label for="name" class="form-label required">Milestone Name</label>
-                        <input type="text" class="form-control {% if errors.name is defined %}is-invalid{% endif %}" id="name" name="name" value="{{ milestone.name }}" required>
-                        <div class="form-text">Enter a descriptive name for the milestone.</div>
+                        <label for="name" class="form-label">Milestone Name</label>
+                        <input type="text" class="form-control {% if errors.name is defined %}is-invalid{% endif %}" id="name" name="name" value="{{ milestone.name }}">
                         {% if errors.name is defined %}
-                            <div class="invalid-feedback">
-                                {{ errors.name }}
+                            <div class="error-message text-danger mt-1">
+                                <small><i class="fas fa-exclamation-circle me-1"></i>{{ errors.name }}</small>
                             </div>
                         {% endif %}
+                        <div class="form-text">Enter a descriptive name for the milestone.</div>
                     </div>
                     
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="expectedDate" class="form-label required">Expected Date</label>
-                            <div class="input-group has-validation">
+                            <label for="expectedDate" class="form-label">Expected Date</label>
+                            <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-calendar"></i></span>
-                                <input type="date" class="form-control {% if errors.expectedDate is defined %}is-invalid{% endif %}" id="expectedDate" name="expectedDate" value="{{ milestone.expectedDate|date('Y-m-d') }}" required>
-                                {% if errors.expectedDate is defined %}
-                                    <div class="invalid-feedback">
-                                        {{ errors.expectedDate }}
-                                    </div>
-                                {% endif %}
+                                <input type="date" class="form-control {% if errors.expectedDate is defined %}is-invalid{% endif %}" id="expectedDate" name="expectedDate" value="{{ milestone.expectedDate|date('Y-m-d') }}">
                             </div>
+                            {% if errors.expectedDate is defined %}
+                                <div class="error-message text-danger mt-1">
+                                    <small><i class="fas fa-exclamation-circle me-1"></i>{{ errors.expectedDate }}</small>
+                                </div>
+                            {% endif %}
                             <div class="form-text">Select the date when this milestone is expected to be completed.</div>
                         </div>
                         
                         <div class="col-md-6">
                             <label for="completionDate" class="form-label">Completion Date</label>
-                            <div class="input-group has-validation">
+                            <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-flag-checkered"></i></span>
-                                <input type="date" class="form-control {% if errors.completionDate is defined %}is-invalid{% endif %}" id="completionDate" name="completionDate" value="{% if milestone.completionDate %}{{ milestone.completionDate|date('Y-m-d') }}{% endif %}">
-                                {% if errors.completionDate is defined %}
-                                    <div class="invalid-feedback">
-                                        {{ errors.completionDate }}
-                                    </div>
-                                {% endif %}
+                                <input type="date" class="form-control {% if errors.completionDate is defined %}is-invalid{% endif %}" id="completionDate" name="completionDate" value="{{ milestone.completionDate ? milestone.completionDate|date('Y-m-d') : '' }}">
                             </div>
+                            {% if errors.completionDate is defined %}
+                                <div class="error-message text-danger mt-1">
+                                    <small><i class="fas fa-exclamation-circle me-1"></i>{{ errors.completionDate }}</small>
+                                </div>
+                            {% endif %}
                             <div class="form-text">If already completed, select the completion date (optional).</div>
                         </div>
                     </div>
                     
                     <div class="mb-4">
-                        <label class="form-label required">Status</label>
+                        <label class="form-label">Status</label>
                         <div class="status-selector">
                             <div class="row">
                                 <div class="col-md-3 mb-2">
@@ -148,8 +148,8 @@
                         </div>
                         <div class="form-text">Select the current status of the milestone.</div>
                         {% if errors.status is defined %}
-                            <div class="text-danger mt-2">
-                                <small>{{ errors.status }}</small>
+                            <div class="error-message text-danger mt-1">
+                                <small><i class="fas fa-exclamation-circle me-1"></i>{{ errors.status }}</small>
                             </div>
                         {% endif %}
                     </div>

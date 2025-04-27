@@ -71,55 +71,55 @@
 
                 <form method="post" action="{{ path('app_event_edit', {id: event.id}) }}">
                     <div class="mb-3">
-                        <label for="name" class="form-label required">Event Name</label>
-                        <input type="text" class="form-control {% if errors.name is defined %}is-invalid{% endif %}" id="name" name="name" value="{{ event.name }}" required>
-                        <div class="form-text">Enter a descriptive name for the event.</div>
+                        <label for="name" class="form-label">Event Name</label>
+                        <input type="text" class="form-control {% if errors.name is defined %}is-invalid{% endif %}" id="name" name="name" value="{{ event.name }}">
                         {% if errors.name is defined %}
-                            <div class="invalid-feedback">
-                                {{ errors.name }}
+                            <div class="error-message text-danger mt-1">
+                                <small><i class="fas fa-exclamation-circle me-1"></i>{{ errors.name }}</small>
                             </div>
                         {% endif %}
+                        <div class="form-text">Enter a descriptive name for the event.</div>
                     </div>
                     
                     <div class="mb-3">
-                        <label for="userId" class="form-label required">User ID</label>
-                        <input type="number" class="form-control {% if errors.userId is defined %}is-invalid{% endif %}" id="userId" name="userId" value="{{ event.userId }}" required>
-                        <div class="form-text">Enter the ID of the user associated with this event.</div>
+                        <label for="userId" class="form-label">User ID</label>
+                        <input type="number" class="form-control {% if errors.userId is defined %}is-invalid{% endif %}" id="userId" name="userId" value="{{ event.userId }}">
                         {% if errors.userId is defined %}
-                            <div class="invalid-feedback">
-                                {{ errors.userId }}
+                            <div class="error-message text-danger mt-1">
+                                <small><i class="fas fa-exclamation-circle me-1"></i>{{ errors.userId }}</small>
                             </div>
                         {% endif %}
+                        <div class="form-text">Enter the ID of the user associated with this event.</div>
                     </div>
                     
                     <div class="mb-3">
-                        <label for="startDate" class="form-label required">Start Date</label>
-                        <input type="date" class="form-control {% if errors.startDate is defined %}is-invalid{% endif %}" id="startDate" name="startDate" value="{{ event.startDate|date('Y-m-d') }}" required>
-                        <div class="form-text">Select the start date of the event.</div>
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input type="date" class="form-control {% if errors.startDate is defined %}is-invalid{% endif %}" id="startDate" name="startDate" value="{{ event.startDate|date('Y-m-d') }}">
                         {% if errors.startDate is defined %}
-                            <div class="invalid-feedback">
-                                {{ errors.startDate }}
+                            <div class="error-message text-danger mt-1">
+                                <small><i class="fas fa-exclamation-circle me-1"></i>{{ errors.startDate }}</small>
                             </div>
                         {% endif %}
+                        <div class="form-text">Select the start date of the event.</div>
                     </div>
                     
                     <div class="mb-3">
                         <label for="category" class="form-label">Category</label>
                         <input type="text" class="form-control {% if errors.category is defined %}is-invalid{% endif %}" id="category" name="category" value="{{ event.category }}">
-                        <div class="form-text">Enter a category for the event (optional).</div>
                         {% if errors.category is defined %}
-                            <div class="invalid-feedback">
-                                {{ errors.category }}
+                            <div class="error-message text-danger mt-1">
+                                <small><i class="fas fa-exclamation-circle me-1"></i>{{ errors.category }}</small>
                             </div>
                         {% endif %}
+                        <div class="form-text">Enter a category for the event (optional).</div>
                     </div>
                     
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
                         <a href="{{ path('app_event_view', {id: event.id}) }}" class="btn btn-secondary me-md-2">
                             <i class="fas fa-times"></i> Cancel
                         </a>
-                        <button type="submit" class="btn btn-warning">
-                            <i class="fas fa-save"></i> Update Event
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Changes
                         </button>
                     </div>
                 </form>
